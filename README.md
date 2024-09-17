@@ -1,6 +1,5 @@
-# SoBot-Start-Prog-Line-Follower
 # Solis Robot - SoBot
-![](https://github.com/SolisTecnologia/SoBot-Start-Prog-Line-Follower/tree/master/png/SoBotSingleLF.png)
+![](https://github.com/SolisTecnologia/SoBot-Start-Prog-Line-Follower/blob/master/png/SoBotSingleLF.png)
 # Introduction
 
 AMR (autonomous mobile robotics) platform equipped with a camera system, ultrasonic and photoelectric sensors, works with a high rate of precision and repeatability of its movements, as it uses stepper motors in its movement and navigation, the SoBot also can be termed as a research and development interface, as it facilitates the practical experimentation of algorithms from the simplest to the most complex level.
@@ -27,21 +26,21 @@ Programming example to control "SoBot" using the Logitech F710 controller and en
 
 This code implements a remote control for the "SoBot", using the Logitech controller to perform functions such as moving, adjusting speed and changing LED colors. It uses serial communication to send commands to the robot and is able to read and react to line sensors to allow the robot to follow a track automatically when enabled by the controller.
 
-Controller button functions:
-BTN_X – Configure LED Strip in Blue color
-BTN_Y – Configure LED Strip in Yellow color
-BTN_A – Configure LED Strip in Green color
-BTN_B – Configure LED Strip in Red color
-BTN_START – Enables wheel motors
-BTN_BACK – Enable and Disables line follower mode
-BTN_R1 – Configure curve mode on the same axis
-BTN_L1 – Configure differential curve mode
-BTN_R2 – Sets speed 8cm/s
-BTN_L2 – Sets speed 4cm/s
-BTN_UP – Moves the robot forward
-BTN_DOWN – Moves the robot backwards
-BTN_LEFT – Moves the robot to the left
-BTN_RIGTH – Moves the robot to the right
+Controller button functions:  
+BTN_X – Configure LED Strip in Blue color  
+BTN_Y – Configure LED Strip in Yellow color  
+BTN_A – Configure LED Strip in Green color  
+BTN_B – Configure LED Strip in Red color  
+BTN_START – Enables wheel motors  
+BTN_BACK – Enable and Disables line follower mode  
+BTN_R1 – Configure curve mode on the same axis  
+BTN_L1 – Configure differential curve mode  
+BTN_R2 – Sets speed 8cm/s  
+BTN_L2 – Sets speed 4cm/s  
+BTN_UP – Moves the robot forward  
+BTN_DOWN – Moves the robot backwards  
+BTN_LEFT – Moves the robot to the left  
+BTN_RIGTH – Moves the robot to the right  
 
 
 ### Main Functions:
