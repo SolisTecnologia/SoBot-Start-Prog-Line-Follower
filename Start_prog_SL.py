@@ -5,8 +5,8 @@ Solis Robot - SoBot
 Controle_F710_Logitech.py: Programming example to control the "SoBot"
 using the Logitech F710 controller once Raspberry is turned on.
 
-Created By   : Vinicius M. Kawakami
-Version      : 1.0
+Created By   : Vinicius M. Kawakami and Rodrigo L. de Carvalho
+Version      : 1.1
 
 Company: Solis Tecnologia
 
@@ -30,7 +30,7 @@ BTN_RIGTH – Moves the robot to the right
 
 import inputs
 import serial
-from time import sleep, time
+from time import sleep
 import threading
 import signal
 import sys
@@ -113,7 +113,7 @@ def stop_read_line ():
 Function created to read Logitech control commands
 ###################################
 '''
-def Read_Gamepad(ev_read_line, ev_stop_read_line, usb):
+def Read_Gamepad(ev_read_line, usb):
 
     global flag_pause
     global flag_BTX_press
@@ -142,22 +142,21 @@ def Read_Gamepad(ev_read_line, ev_stop_read_line, usb):
 
                 # Check if the event code is "BTN_SELECT" in state 1
                 if event.code == "BTN_SELECT":
-                    if ev_stop_read_line.is_set() == 0 and event.state == 1:
+                    if ev_read_line.is_set() == 0 and event.state == 1:
                         print("Botão Select pressionado")
-                        usb.write(b"LT E1 RD100 GR100 BL100")       # Turn on Led Tap
-                        usb.write(b"MT0 MC MD1 RI20 AT50 DT50 V6")  # Parameter settings for continuous mode
-                        usb.write(b"MT0 ME1")                       # Enables wheel motors on mode continuous
+                        usb.write(b"LT E1 RD100 GR100 BL100")   # Turn on Led Tap
+                        usb.write(b"MT0 MC MD1 RI20 AT50 DT50 V6") # Parameter settings for continuous mode
+                        usb.write(b"MT0 ME1")               # Enables wheel motors on mode continuous
                         ev_read_line.set()
 
-                    elif ev_stop_read_line.is_set() and event.state == 1:
+                    elif ev_read_line.is_set() and event.state == 1:
                         print("Botão Select pressionado")
                         usb.write(b"MT0 MP")                # Moviment Pause
                         usb.write(b"MT0 ME0")               # Disables wheel motors on mode continuous
                         stop_read_line ()
-                        ev_stop_read_line.clear()
                         ev_read_line.clear()
 
-                if ev_stop_read_line.is_set() == 0:
+                if ev_read_line.is_set() == 0:
                     # Check if the event code is "BTN_START" in state 1
                     if event.code == "BTN_START" and event.state == 1:
                         print("Botão Start pressionado")
@@ -214,7 +213,7 @@ def Read_Gamepad(ev_read_line, ev_stop_read_line, usb):
                 print(f"Evento code: {event.code}")
                 print(f"Evento state: {event.state}")
 
-                if ev_stop_read_line.is_set() == 0:
+                if ev_read_line.is_set() == 0:
                     ### Buttons to control the direction ###
                     # Events with the MODE button disabled
                     # Check if the event code is "ABS_HAT0X"
@@ -226,21 +225,21 @@ def Read_Gamepad(ev_read_line, ev_stop_read_line, usb):
                                     flag_pause = 1
                                     print("Botão ESQ pressionado")
                                     usb.write(b"MT0 ML")
-                                    threading.Timer(0, Timer_Pause).start()
+                                    threading.Timer(0.1, Timer_Pause).start()
 
                                 elif event.state == 1:      # Check state (right direction) of the button
                                     flag_BTX_press = 1
                                     flag_pause = 1
                                     print("Botão DIR pressionado")
                                     usb.write(b"MT0 MR")
-                                    threading.Timer(0, Timer_Pause).start()
+                                    threading.Timer(0.1, Timer_Pause).start()
 
                             elif flag_BTX_press == 1:
                                 if event.state == 0:
                                     flag_BTX_press = 2
                                     if flag_pause == 0:
                                         usb.write(b"MT0 MP")
-                                        threading.Timer(0, Timer_BTX_Press).start()
+                                        threading.Timer(0.1, Timer_BTX_Press).start()
 
                     # Check if the event code is "ABS_HAT0Y"
                     if event.code == "ABS_HAT0Y":
@@ -251,21 +250,21 @@ def Read_Gamepad(ev_read_line, ev_stop_read_line, usb):
                                     flag_pause = 1
                                     print("Botão FRENTE pressionado")
                                     usb.write(b"MT0 MF")
-                                    threading.Timer(0, Timer_Pause).start()
+                                    threading.Timer(0.1, Timer_Pause).start()
 
                                 elif event.state == 1:      # Check state (back direction) of the button
                                     flag_BTY_press = 1
                                     flag_pause = 1
                                     print("Botão TRAS pressionado")
                                     usb.write(b"MT0 MB")
-                                    threading.Timer(0, Timer_Pause).start()
+                                    threading.Timer(0.1, Timer_Pause).start()
 
                             elif flag_BTY_press == 1:
                                 if event.state == 0:
                                     flag_BTY_press = 2
                                     if flag_pause == 0:
                                         usb.write(b"MT0 MP")
-                                        threading.Timer(0, Timer_BTY_Press).start()
+                                        threading.Timer(0.1, Timer_BTY_Press).start()
                     
                     ### Buttons to control the velocity ###
                     # Check if the event code is "ABS_RZ"
@@ -298,8 +297,7 @@ def Read_Gamepad(ev_read_line, ev_stop_read_line, usb):
 Function created to read the line sensor
 ###################################
 '''
-def Read_Line(ev_read_line, ev_stop_read_line, usb):
-
+def Read_Line(ev_read_line, usb):
     data_line = [48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48]
     flag_fw = 0
     flag_lt = 0
@@ -328,9 +326,9 @@ def Read_Line(ev_read_line, ev_stop_read_line, usb):
 
         if ev_read_line.is_set():
 
-            flag_read_line = 1
-            if ev_stop_read_line.is_set() == 0:
-                ev_stop_read_line.set()
+
+            if flag_read_line == 0:
+                flag_read_line = 1
                 flag_fw = 0
                 flag_lt = 0
                 flag_rh = 0
@@ -341,26 +339,28 @@ def Read_Line(ev_read_line, ev_stop_read_line, usb):
                 sleep(1)
 
             usb.write(b"SL")            # Send command to read line sensor
-            #sleep(0.1)                 # Wait to return datas
+            #sleep(0.1)                  # Wait to return datas
             while(usb.in_waiting == 0):
                 pass
             if(usb.in_waiting):
                 data_line = usb.readline()  # Read data
-                #print(data_line)
+                # print(data_line)
 
                 if data_line[0] == 83 and data_line[1] == 76:     # Verifica se é "S" e "L"
                     if count >= 20:
                         count = 0                    
 
                     #print(str(count))
+                    
                     pos_S1[count] = data_line[4] - 48
                     pos_S2[count] = data_line[10] - 48
                     pos_S3[count] = data_line[16] - 48
+                    
                     count += 1
 
-                    count_S1 = pos_S1[0]+pos_S1[1]+pos_S1[2]+pos_S1[3]+pos_S1[4]+pos_S1[5]+pos_S1[6]+pos_S1[7]+pos_S1[8]+pos_S1[9]+pos_S1[10]+pos_S1[11]+pos_S1[12]+pos_S1[13]+pos_S1[14]+pos_S1[15]+pos_S1[16]+pos_S1[17]+pos_S1[18]+pos_S1[19]
-                    count_S2 = pos_S2[0]+pos_S2[1]+pos_S2[2]+pos_S2[3]+pos_S2[4]+pos_S2[5]+pos_S2[6]+pos_S2[7]+pos_S2[8]+pos_S2[9]+pos_S2[10]+pos_S2[11]+pos_S2[12]+pos_S2[13]+pos_S2[14]+pos_S2[15]+pos_S2[16]+pos_S2[17]+pos_S2[18]+pos_S2[19]
-                    count_S3 = pos_S3[0]+pos_S3[1]+pos_S3[2]+pos_S3[3]+pos_S3[4]+pos_S3[5]+pos_S3[6]+pos_S3[7]+pos_S3[8]+pos_S3[9]+pos_S3[10]+pos_S3[11]+pos_S3[12]+pos_S3[13]+pos_S3[14]+pos_S3[15]+pos_S3[16]+pos_S3[17]+pos_S3[18]+pos_S3[19]
+                    count_S1 = sum(pos_S1)
+                    count_S2 = sum(pos_S2)
+                    count_S3 = sum(pos_S3)
 
                     print("C_S1: " + str(count_S1) + " C_S2: " + str(count_S2) + " C_S3: " + str(count_S3))
 
@@ -372,16 +372,15 @@ def Read_Line(ev_read_line, ev_stop_read_line, usb):
                             usb.write(b"LT E1 RD20 GR70 BL30")
                             usb.write(b"MT0 MC MD1 RI20 AT50 DT50 V6")
                             usb.write(b"MT0 MF")    # Moving to forward
-                            print(time())
-                            sleep(0.1)
                             print("forward")
 
                     elif count_S1 == 0 and count_S2 == 0 and count_S3 == 0:
-                        ev_stop_read_line.clear()
+                        #ev_Enable.clear()
+                        #ev_Pause.set()
+                        stop_read_line()
                         ev_read_line.clear()
                         usb.write(b"MT0 MP")                # Moviment Pause
                         usb.write(b"MT0 ME0")               # Disables wheel motors on mode continuous
-                        stop_read_line ()
 
                     else:
                         if count_S1 >= 3 and count_S2 > 0 and count_S3 == 0:      # Condição para corrigir virando a esquerda
@@ -391,7 +390,6 @@ def Read_Line(ev_read_line, ev_stop_read_line, usb):
                                 flag_rh = 0
                                 usb.write(b"MT0 MC MD1 RI20 AT50 DT50 V5")
                                 usb.write(b"MT0 ML")        # Turn left
-                                print(time())
                                 sleep(0.15)
                                 print("send left")
 
@@ -402,7 +400,6 @@ def Read_Line(ev_read_line, ev_stop_read_line, usb):
                                 flag_rh = 1
                                 usb.write(b"MT0 MC MD1 RI20 AT50 DT50 V5")
                                 usb.write(b"MT0 MR")        # Turn rigth
-                                print(time())
                                 sleep(0.15)
                                 print("send rigth")
 
@@ -431,9 +428,9 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, handle_signal)
 
     # Configure wheel parametres
-    usb.write(b"WP MT1 WD100,06")
-    usb.write(b"WP MT2 WD100,09")
-    usb.write(b"WP DW270,13")
+    usb.write(b"WP MT1 WD99,84")
+    usb.write(b"WP MT2 WD99,54")
+    usb.write(b"WP DW264,95")
 
     # Set the motion proportional gain
     #usb.write(b"PG SO2,3 CA3,22 DF6,11 RI-6")
@@ -444,10 +441,10 @@ if __name__ == '__main__':
     usb.write(b"LT E1 RD0 GR100 BL0")   # Turn on Led Tap
 
     ev_read_line = multiprocessing.Event()          # Event to indicate line reading
-    ev_stop_read_line = multiprocessing.Event()     # Event to indicate pause in line reading
 
-    app_Read_Gamepad = multiprocessing.Process(target=Read_Gamepad,args=(ev_read_line, ev_stop_read_line, usb))
-    app_Read_Line = multiprocessing.Process(target=Read_Line,args=(ev_read_line, ev_stop_read_line, usb))
+
+    app_Read_Gamepad = multiprocessing.Process(target=Read_Gamepad,args=(ev_read_line, usb))
+    app_Read_Line = multiprocessing.Process(target=Read_Line,args=(ev_read_line, usb))
 
     app_Read_Gamepad.start()
     app_Read_Line.start()
