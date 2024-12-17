@@ -313,7 +313,7 @@ def Read_Line(ev_read_line, usb):
     pos_S3 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
     pygame.mixer.init()
-    start_sound = '/home/pi/Documentos/Projetos/Demo/Start_prog'
+    start_sound = ''
     selected_music1 = os.path.join(start_sound, 'Frase_Start-Sobot.mp3')
     selected_music2 = os.path.join(start_sound, 'SL_Ativado.mp3')
     selected_music3 = os.path.join(start_sound, 'SL_Desativado.mp3')
