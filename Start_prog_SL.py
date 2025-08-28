@@ -428,9 +428,9 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, handle_signal)
 
     # Configure wheel parametres
-    usb.write(b"WP MT1 WD99,84")
-    usb.write(b"WP MT2 WD99,54")
-    usb.write(b"WP DW264,95")
+    usb.write(b"WP MT1 WD100")
+    usb.write(b"WP MT2 WD100")
+    usb.write(b"WP DW262")
 
     # Set the motion proportional gain
     #usb.write(b"PG SO2,3 CA3,22 DF6,11 RI-6")
