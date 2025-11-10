@@ -88,6 +88,9 @@ def stop_read_line ():
 
     print("stop read line")
     flag_init_read_line = 0
+   
+    usb.write(b"MT0 MP")                # Moviment Pause
+    usb.write(b"MT0 ME0")               # Disables wheel motors on mode continuous
 
     usb.write(b"LT E1 RD0 GR0 BL0")
     sleep(0.5)
@@ -151,9 +154,6 @@ def Read_Gamepad(ev_read_line, usb):
 
                     elif ev_read_line.is_set() and event.state == 1:
                         print("Botão Select pressionado")
-                        usb.write(b"MT0 MP")                # Moviment Pause
-                        usb.write(b"MT0 ME0")               # Disables wheel motors on mode continuous
-                        stop_read_line ()
                         ev_read_line.clear()
 
                 if ev_read_line.is_set() == 0:
@@ -375,12 +375,8 @@ def Read_Line(ev_read_line, usb):
                             print("forward")
 
                     elif count_S1 == 0 and count_S2 == 0 and count_S3 == 0:
-                        #ev_Enable.clear()
-                        #ev_Pause.set()
-                        stop_read_line()
                         ev_read_line.clear()
-                        usb.write(b"MT0 MP")                # Moviment Pause
-                        usb.write(b"MT0 ME0")               # Disables wheel motors on mode continuous
+
 
                     else:
                         if count_S1 >= 3 and count_S2 > 0 and count_S3 == 0:      # Condição para corrigir virando a esquerda
@@ -410,6 +406,7 @@ def Read_Line(ev_read_line, usb):
                 print("SL_Desativado")
                 pygame.mixer.music.load(selected_music3)
                 pygame.mixer.music.play()
+                stop_read_line()
                 while pygame.mixer.music.get_busy():
                     pass
 
