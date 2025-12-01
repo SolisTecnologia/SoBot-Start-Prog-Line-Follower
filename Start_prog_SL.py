@@ -72,10 +72,10 @@ def Timer_Pause ():
     flag_pause = 0
     if flag_BTY_press == 2:
         usb.write(b"MT0 MP")
-        threading.Timer(0.1, Timer_BTY_Press).start()
+        threading.Timer(0.01, Timer_BTY_Press).start()
     elif flag_BTX_press == 2:
         usb.write(b"MT0 MP")
-        threading.Timer(0.1, Timer_BTX_Press).start()
+        threading.Timer(0.01, Timer_BTX_Press).start()
 
 # Function to handle script termination signal
 def handle_signal(signum, frame):
@@ -225,21 +225,21 @@ def Read_Gamepad(ev_read_line, usb):
                                     flag_pause = 1
                                     print("Botão ESQ pressionado")
                                     usb.write(b"MT0 ML")
-                                    threading.Timer(0.1, Timer_Pause).start()
+                                    threading.Timer(0.01, Timer_Pause).start()
 
                                 elif event.state == 1:      # Check state (right direction) of the button
                                     flag_BTX_press = 1
                                     flag_pause = 1
                                     print("Botão DIR pressionado")
                                     usb.write(b"MT0 MR")
-                                    threading.Timer(0.1, Timer_Pause).start()
+                                    threading.Timer(0.01, Timer_Pause).start()
 
                             elif flag_BTX_press == 1:
                                 if event.state == 0:
                                     flag_BTX_press = 2
                                     if flag_pause == 0:
                                         usb.write(b"MT0 MP")
-                                        threading.Timer(0.1, Timer_BTX_Press).start()
+                                        threading.Timer(0.01, Timer_BTX_Press).start()
 
                     # Check if the event code is "ABS_HAT0Y"
                     if event.code == "ABS_HAT0Y":
@@ -250,21 +250,21 @@ def Read_Gamepad(ev_read_line, usb):
                                     flag_pause = 1
                                     print("Botão FRENTE pressionado")
                                     usb.write(b"MT0 MF")
-                                    threading.Timer(0.1, Timer_Pause).start()
+                                    threading.Timer(0.01, Timer_Pause).start()
 
                                 elif event.state == 1:      # Check state (back direction) of the button
                                     flag_BTY_press = 1
                                     flag_pause = 1
                                     print("Botão TRAS pressionado")
                                     usb.write(b"MT0 MB")
-                                    threading.Timer(0.1, Timer_Pause).start()
+                                    threading.Timer(0.01, Timer_Pause).start()
 
                             elif flag_BTY_press == 1:
                                 if event.state == 0:
                                     flag_BTY_press = 2
                                     if flag_pause == 0:
                                         usb.write(b"MT0 MP")
-                                        threading.Timer(0.1, Timer_BTY_Press).start()
+                                        threading.Timer(0.01, Timer_BTY_Press).start()
                     
                     ### Buttons to control the velocity ###
                     # Check if the event code is "ABS_RZ"
