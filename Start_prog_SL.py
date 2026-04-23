@@ -30,6 +30,7 @@ BTN_RIGTH – Moves the robot to the right
 
 import inputs
 import serial
+import serial.tools.list_ports
 from time import sleep
 import threading
 import signal
@@ -50,12 +51,31 @@ flag_BTX_press = 0
 flag_BTY_press = 0
 flag_pause = 0
 
+# USB Serial Port Descriptions
+Desc_SoBot_serial = "VCOM"
 
 '''
 ###################################
         Auxiliary Functions
 ###################################
 '''
+
+"""
+Function to find the serial port that the SoBot board is connected to
+"""
+def serial_device_finder (name_device):
+    # List all available serial ports
+    ports = serial.tools.list_ports.comports()
+    
+    for port in ports:
+        # Check if the port description contains the device name
+        if name_device in port.description:
+            print(f"Device found: {port.device} - {port.description}")
+            return port.device
+
+    # If can't find the device
+    print(f"Device '{name_device}' not found.")
+    return None
 
 def Timer_BTX_Press ():
     global flag_BTX_press
@@ -313,7 +333,7 @@ def Read_Line(ev_read_line, usb):
     pos_S3 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 
     pygame.mixer.init()
-    start_sound = ''
+    start_sound = os.path.dirname(os.path.abspath(__file__))
     selected_music1 = os.path.join(start_sound, 'Frase_Start-Sobot.mp3')
     selected_music2 = os.path.join(start_sound, 'SL_Ativado.mp3')
     selected_music3 = os.path.join(start_sound, 'SL_Desativado.mp3')
@@ -386,7 +406,7 @@ def Read_Line(ev_read_line, usb):
                                 flag_rh = 0
                                 usb.write(b"MT0 MC MD1 RI20 AT50 DT50 V5")
                                 usb.write(b"MT0 ML")        # Turn left
-                                sleep(0.15)
+                                sleep(0.1)
                                 print("send left")
 
                         if count_S1 == 0 and count_S2 > 0 and count_S3 >= 3:      # Condição para corrigir virando a direita
@@ -396,7 +416,7 @@ def Read_Line(ev_read_line, usb):
                                 flag_rh = 1
                                 usb.write(b"MT0 MC MD1 RI20 AT50 DT50 V5")
                                 usb.write(b"MT0 MR")        # Turn rigth
-                                sleep(0.15)
+                                sleep(0.1)
                                 print("send rigth")
 
                     data_line = [48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48,48]
@@ -417,10 +437,19 @@ def Read_Line(ev_read_line, usb):
 ###################################
 '''
 if __name__ == '__main__':
-    # Configure the serial port
-    usb = serial.Serial('/dev/ttyACM0', 57600, timeout=0, dsrdtr=False)
-    usb.flush()
 
+    # Serial connection of the SoBot power and control board
+    usb = serial.Serial()
+    serial_SoBot = serial_device_finder(Desc_SoBot_serial)
+
+    if serial_SoBot :
+        # Connect to the found device
+        usb = serial.Serial(serial_SoBot, baudrate=57600, timeout=0, dsrdtr=False)
+        usb.flush()
+        print(f"Connected to device: {serial_SoBot}")
+    else:
+        print("No device 0 was connected.")
+        
     # Function registration for handling "SIGTERM" signal
     signal.signal(signal.SIGTERM, handle_signal)
 
